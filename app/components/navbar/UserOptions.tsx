@@ -4,9 +4,10 @@ import {RiMenu3Fill} from 'react-icons/ri';
 import { useCallback, useState } from 'react';
 import UserAvatar from '../UserAvatar';
 import ItemsUserMenu from './ItemsUserMenu';
+import useRegisterModal from '@/app/hooks/useRegisterModal';
 
 const UserOptions = () => {
-
+    const registerModal = useRegisterModal();
     const [isOpen, setIsOpen] = useState(false);
 
     const toggleOpen = useCallback(() => {
@@ -37,7 +38,7 @@ const UserOptions = () => {
                     <div className="flex flex-col cursor-pointer">
                         <>
                             <ItemsUserMenu  onClick={() => console.log("Oi")} label="Login" />
-                            <ItemsUserMenu  onClick={() => console.log("Oi")} label="Sign Up" />
+                            <ItemsUserMenu  onClick={registerModal.onOpen} label="Sign Up" />
                         </>
                     </div> 
                 </div>    
