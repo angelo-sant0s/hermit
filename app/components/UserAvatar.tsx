@@ -10,7 +10,7 @@ const UserAvatar = () => {
             height="30"
             width="30"
             alt="User Avatar"
-            src=""
+            src="/images/placeholder.png"
         />
     )
 }
