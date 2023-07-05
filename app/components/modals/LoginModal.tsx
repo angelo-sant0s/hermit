@@ -5,6 +5,7 @@ import { AiFillGithub } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
 import { useCallback, useState } from "react";
 import { FieldValues, SubmitHandler, useForm} from "react-hook-form";
+import useLoginModal from "@/app/hooks/useLoginModal";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 import BaseModal from "./BaseModal";
 import Heading from "../Heading";
@@ -12,51 +13,47 @@ import Input from "../inputs/Input";
 import { toast } from "react-hot-toast";
 import MainButton from "../MainButton";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
-const RegisterModal = () => {
+const LoginModal = () => {
 
+    const loginModal = useLoginModal();
     const registerModal = useRegisterModal();
     const [isLoading , setIsLoading] = useState(false);
+    const router = useRouter();
+    
 
-
-    const { register, handleSubmit, formState: { errors,} } = useForm<FieldValues>({defaultValues: {name: "", email: "", password: ""}});
+    const { register, handleSubmit, formState: { errors,} } = useForm<FieldValues>({defaultValues: {email: "", password: ""}});
 
 
     const onSubmit: SubmitHandler<FieldValues> = (data) => {
         setIsLoading(true);
-        axios.post('/api/register', data)
-            .then(() => {
-                registerModal.onClose();
-            })
-            .catch((error) => {
-                toast.error("Wtf happened");
-            })
-            .finally(() => {
-                setIsLoading(false);
-            })
+        signIn('credentials', {...data, redirect: false})
+        .then((callback) => {
+            setIsLoading(false);
+            if(callback?.ok){
+                toast.success('Logged in');
+                router.refresh();
+                loginModal.onClose();
+            }
+            if(callback?.error){
+                toast.error(callback.error);
+            }
+        })
     }
 
 
     const modalBody = (
         <div className="flex flex-col gap-4">
             <Heading 
-                title="Welcome to Hermit." 
-                subtitle="Create your Account!" 
+                title="Welcome back to Hermit." 
+                subtitle="Login to your account!" 
             />
             <Input 
                 register={register} 
                 id="email"
                 type="text" 
                 label="Email"
-                disabled={isLoading}
-                errors={errors}
-                required
-            />
-            <Input 
-                register={register} 
-                id="name"
-                type="text" 
-                label="Name"
                 disabled={isLoading}
                 errors={errors}
                 required
@@ -85,7 +82,7 @@ const RegisterModal = () => {
                    </div>
                    <button 
                    className="text-neutral-800 cursor-pointer hover:underline"
-                   onClick={registerModal.onClose}
+                   onClick={loginModal.onClose}
                    >
                      Log in 
                    </button>
@@ -97,10 +94,10 @@ const RegisterModal = () => {
     return(
             <BaseModal
                 disabled={isLoading}
-                isOpen={registerModal.isOpen}
-                title="Become a Hermit"
-                actionLabel="Sign Up"
-                onClose={registerModal.onClose}
+                isOpen={loginModal.isOpen}
+                title="Login"
+                actionLabel="Sign In"
+                onClose={loginModal.onClose}
                 onSubmit={handleSubmit(onSubmit)}
                 body={modalBody}
                 footer={modalFooter}
@@ -108,4 +105,4 @@ const RegisterModal = () => {
     )
 }
 
-export default RegisterModal;
+export default LoginModal;
