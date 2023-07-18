@@ -6,6 +6,8 @@ import Heading from "../Heading";
 import { categories } from "../navbar/Categories";
 import CategorySelector from "../inputs/CategorySelector";
 import { FieldValues, useForm } from "react-hook-form";
+import CountrySelect from "../inputs/CountrySelect";
+import dynamic from "next/dynamic";
 
 
 enum STEPS {
@@ -46,6 +48,9 @@ const RentModal = () => {
     });
 
     const category = watch("category");
+    const location = watch("location");
+
+    const Map = useMemo(() => dynamic(() => import("../Map"), { ssr: false }), [location]);
 
     const setCustomValue = (id: string, value: any) => {
         setValue(id, value, {
@@ -99,14 +104,29 @@ const RentModal = () => {
         </div>
     )
 
+    if(step === STEPS.LOCATION){
+        modalBody = (
+            <div className="flex flex-col gap-8">
+                <Heading title="Where is your house located" subtitle="Let your guests find you!" />
+                <CountrySelect
+                    value={location}
+                    onChange={(value) => setCustomValue("location", value)}
+                />
+                <Map center={location?.latlng} />
+            </div>
+        )
+    }
+
+
     return(
         <BaseModal 
             title="Hermit your Home!"
             isOpen={rentModal.isOpen}
             onClose={rentModal.onClose}
-            onSubmit={rentModal.onClose}
+            onSubmit={onFoward}
             actionLabel={actionLabel}
             secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
+            secondaryLabel={secondaryActionLabel}
             body={modalBody}
         />
     )
