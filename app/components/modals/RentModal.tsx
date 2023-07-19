@@ -9,6 +9,7 @@ import { FieldValues, useForm } from "react-hook-form";
 import CountrySelect from "../inputs/CountrySelect";
 import PropertyCounter from "../PropertyCounter";
 import dynamic from "next/dynamic";
+import ImgUploader from "../inputs/ImgUploader";
 
 
 enum STEPS {
@@ -53,6 +54,9 @@ const RentModal = () => {
     const guestCount = watch("guestCount");
     const roomCount = watch("roomCount");
     const bathroomCount = watch("bathroomCount");
+    const imageSrc = watch("imageSrc");
+    const title = watch("title");
+    const description = watch("description");
 
     const Map = useMemo(() => dynamic(() => import("../Map"), { ssr: false }), [location]);
 
@@ -134,6 +138,20 @@ const RentModal = () => {
         modalBody = (
             <div className="flex flex-col gap-8">
                 <Heading title="Share some pictures of your house." subtitle="So your guests know what to look foward too." />
+                <ImgUploader onChange={(value) => setCustomValue("imageSrc", value)} value={imageSrc} />
+            </div>
+        )
+    }else if(step === STEPS.DESCRIPTION){
+        modalBody = (
+            <div className="flex flex-col gap-8">
+                <Heading title="Share some details about your house." subtitle="So your guests know what to look foward too." />
+                
+            </div>
+        )
+    }else if(step === STEPS.PRICE){ 
+        modalBody = (
+            <div className="flex flex-col gap-8">
+                <Heading title="How much are you charging." subtitle="Let your guests know how much you want to receive for hermiting your house." />
             </div>
         )
     }
