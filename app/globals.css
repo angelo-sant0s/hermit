@@ -11,6 +11,6 @@ body,
 .leaflet-bottom,
 .leaflet-control,
 .leaflet-pane,
-.leaftlet-top{
+.leaflet-top{
     z-index: 0 !important;
 }
